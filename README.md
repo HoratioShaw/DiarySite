@@ -1,6 +1,6 @@
-# diary-site
+# DiarySite
 
-[diary.horatio.cn](https://diary.horatio.cn) 的落地页——「日记系列」两款 Android 应用（[热量日记](https://github.com/HoratioShaw/calorie-diary)、[开支日记](https://github.com/HoratioShaw/expense-diary)）的下载入口。
+[diary.horatio.cn](https://diary.horatio.cn) 的落地页——「日记系列」两款 Android 应用（[热量日记](https://github.com/HoratioShaw/CalorieDiary)、[开支日记](https://github.com/HoratioShaw/ExpenseDiary)）的下载入口。
 
 单文件静态页 `index.html`（CSS 内联，无构建步骤、无外部资源），推送到 `main` 即由 self-hosted runner rsync 部署到服务器 `/www/wwwroot/diary.horatio.cn/`。
 

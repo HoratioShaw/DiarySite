@@ -1,4 +1,4 @@
-# AGENTS.md — diary-site
+# AGENTS.md — DiarySite
 
 Static landing page for `diary.horatio.cn`, the download entry for the 热量日记 / 开支日记 Android apps: one `index.html` with inline CSS, no build step or external runtime resources. Push to `main` runs `.github/workflows/deploy.yml` manifest-managed rsync to `/www/wwwroot/diary.horatio.cn/`.
 
