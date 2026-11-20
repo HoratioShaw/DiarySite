@@ -460,7 +460,7 @@
 
   <script>
   // 下载通道探测：OpenList 的裸 GET 一律返回 SPA 壳，读文件必须走 /api/fs/get 换 raw_url。
-  // APK 直链同理——download_url 裸 GET 会拿到 HTML，页面加载时用 fs/get 换签名 raw_url 作 href。
+  // APK 直链同理——artifacts[].url 裸 GET 会拿到 HTML，页面加载时用 fs/get 换签名 raw_url 作 href。
   // 没探测到 version.json 的通道视为未发布：tab 禁用、不给任何下载入口；探测失败静默处理，不刷控制台。
   (function () {
     var STORAGE = 'https://storage.horatio.cn';
@@ -500,18 +500,22 @@
           .then(function (r) { return r.ok ? r.json() : null; })
           .catch(function () { return null; })
           .then(function (meta) {
-            if (!meta || !meta.version_name || !meta.download_url) return { status: 'error' };
-            if (/-alpha\./.test(meta.version_name)) return { status: 'error' }; // alpha 不外露，CI 误投放时页面不背锅
+            // version.json 是 Wails 式 camelCase：versionName / publishedAt / notes / artifacts[]，
+            // 没有 snake_case 也没有顶层 download_url/changelog。取 Android 产物（arm64 单包，无则第一条）。
+            if (!meta || !meta.versionName || !meta.artifacts || !meta.artifacts.length) return { status: 'error' };
+            var art = meta.artifacts.filter(function (a) { return a.platform === 'android-arm64'; })[0] || meta.artifacts[0];
+            if (!art || !art.url) return { status: 'error' };
             var apkPath = null;
-            try { apkPath = new URL(meta.download_url, STORAGE).pathname; } catch (e) {}
+            try { apkPath = new URL(art.url, STORAGE).pathname; } catch (e) {}
             if (!apkPath) return { status: 'error' };
             return fetchRaw(apkPath).then(function (apkRes) {
               if (!apkRes.raw) return { status: 'error' };
+              var notes = meta.notes || '';
               return {
                 status: 'ready',
-                version: meta.version_name,
-                updated: meta.updated_at || '',
-                log: meta.changelog || '',
+                version: meta.versionName,
+                updated: meta.publishedAt || '',
+                log: typeof notes === 'string' ? notes : '',
                 href: apkRes.raw
               };
             });
