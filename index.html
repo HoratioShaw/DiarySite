@@ -37,6 +37,10 @@
     --surface-container-high: #E8E8E8;
     --surface-variant: #E0E0E0;
 
+    /* 吸顶玻璃顶栏高度 + 光学留白：避免锚点/焦点目标被顶栏遮住（WCAG 2.4.11） */
+    --header-h: 56px;
+    --anchor-gap: 16px;
+
     /* 旧名别名：值与既有站点保持一致，CSS/JS 契约不变 */
     --canvas: var(--background);
     --card: var(--surface);
@@ -50,14 +54,14 @@
     --btn2-ink: #303030;
 
     /* 圆角 token */
-    --r-8: 8px; --r-12: 12px; --r-16: 16px; --r-20: 20px; --r-28: 28px;
+    --r-8: 8px; --r-12: 12px; --r-16: 16px; --r-28: 28px;
 
     /* 间距 token（4/8pt） */
     --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px;
     --sp-6: 24px; --sp-7: 28px; --sp-8: 32px; --sp-10: 40px; --sp-18: 72px;
 
     /* 字阶 token */
-    --fs-title1: 32px; --fs-title2: 24px; --fs-title4: 15px;
+    --fs-title2: 24px;
     --fs-body2: 14px; --fs-footnote: 12px;
 
     /* 动效 token：开关/分段控件用 spring，其余克制；reduce 下由媒体查询统一禁用 */
@@ -72,6 +76,9 @@
     --shimmer: rgba(255, 255, 255, .85);
     --fade: rgba(0, 0, 0, .16);
     --glass-bg: rgba(247, 247, 247, .72);
+    --glass-card-bg: rgba(255, 255, 255, .82);
+    --glass-card-blur: 16px;
+    --glass-card-saturate: 1.4;
 
     --gutter: clamp(16px, 4vw, 32px);
     --font: MiSans, -apple-system, "HarmonyOS Sans SC", "PingFang SC",
@@ -95,6 +102,7 @@
       --shadow-2: 0 2px 6px rgba(0, 0, 0, .55), 0 16px 36px rgba(0, 0, 0, .5);
       --ico-shadow: drop-shadow(0 8px 18px rgba(43, 109, 232, .4));
       --glass-bg: rgba(0, 0, 0, .6);
+      --glass-card-bg: rgba(36, 36, 36, .82);
     }
   }
 
@@ -123,6 +131,9 @@
   /* 图标（lucide 内联）：默认 1em，随文字对齐，颜色继承 currentColor */
   .ico { width: 1em; height: 1em; flex: none; vertical-align: -.125em; }
 
+  /* 吸顶栏避让：锚点、键盘焦点与 scrollIntoView 都落在顶栏下方 */
+  html { scroll-padding-top: calc(var(--header-h) + var(--anchor-gap)); }
+
   /* 顶栏：Miuix 式玻璃 top bar（blur + saturate），不支持 backdrop-filter 时回退实底 */
   header {
     position: sticky; top: 0; z-index: 10;
@@ -134,6 +145,7 @@
   }
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     header { background: var(--canvas); }
+    .card { background: var(--surface); }
   }
   .brand {
     display: flex; align-items: center; gap: var(--sp-3);
@@ -153,12 +165,16 @@
   /* Card 表面：手机单列全宽，≥768px 双卡并排 */
   .cards {
     display: grid; grid-template-columns: 1fr; gap: var(--sp-4);
+    /* 顶栏与首卡之间留光学间距，窄屏不再粘在一起 */
+    padding-top: clamp(var(--sp-4), 4vw, var(--sp-7));
     padding-bottom: clamp(var(--sp-10), 7vw, var(--sp-18));
   }
   @media (min-width: 768px) { .cards { grid-template-columns: 1fr 1fr; gap: var(--sp-6); } }
 
   .card {
-    background: var(--surface);
+    background: var(--glass-card-bg);
+    -webkit-backdrop-filter: blur(var(--glass-card-blur)) saturate(var(--glass-card-saturate));
+    backdrop-filter: blur(var(--glass-card-blur)) saturate(var(--glass-card-saturate));
     border-radius: var(--r-28);
     padding: clamp(var(--sp-5), 3vw, var(--sp-7));
     box-shadow: var(--shadow-1);
@@ -346,6 +362,7 @@
       animation-iteration-count: 1 !important;
     }
     .card:hover, .chan:active, .btn:active { transform: none; }
+    .btn.is-loading::after { animation: none !important; }
   }
 
   /* 动效统一：入场/抬升/切换 160~300ms，克制 easing，单次不超过 400ms */
