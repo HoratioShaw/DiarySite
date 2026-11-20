@@ -258,7 +258,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; }
-    .intro, .card, .ver, .dl-note, details.log { animation: none !important; }
+    .card, .ver, .dl-note, details.log { animation: none !important; }
     .card:hover, .chan:active { transform: none; }
     .btn.is-loading::after { animation: none; }
   }
@@ -268,7 +268,6 @@
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .intro { animation: fade-in-up .3s cubic-bezier(.2, 0, 0, 1) backwards; }
   .cards .card:nth-child(1) { animation: fade-in-up .3s cubic-bezier(.2, 0, 0, 1) .06s backwards; }
   .cards .card:nth-child(2) { animation: fade-in-up .3s cubic-bezier(.2, 0, 0, 1) .14s backwards; }
 
@@ -280,7 +279,7 @@
 </head>
 <body>
   <!-- lucide 图标 sprite（ISC 许可，https://lucide.dev/license）：
-       notebook-pen / flame / receipt / dot / download / smartphone / check / flask-conical / calendar / chevron-down
+       notebook-pen / flame / receipt / dot / download / check / flask-conical / calendar / chevron-down
        其中 flame 与 receipt 路径照抄两 App 仓库 ic_launcher_foreground.xml（同为 Lucide 24 视口）；
        sq-bg = squircle 超椭圆底（|x|⁵+|y|⁵=1，108 视口 8% 留白）叠两 App 启动图标同款竖直蓝渐变。
        容器用零尺寸定位而非 display:none：渐变等 paint server 不能从 display:none 子树解析 -->
@@ -309,9 +308,6 @@
     <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>
     </symbol>
-    <symbol id="i-smartphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>
-    </symbol>
     <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M20 6 9 17l-5-5"/>
     </symbol>
@@ -337,13 +333,18 @@
   </header>
 
   <main class="wrap">
+    <h1 class="sr-only">日记系列下载</h1>
     <section class="intro">
       <noscript>
         <p class="noscript-note">未启用 JavaScript，无法探测下载通道，下载按钮不可用。启用后请刷新页面。</p>
       </noscript>
     </section>
 
-    <section class="cards"></section>
+    <section class="cards">
+      <!-- 无 JS 时的静态兜底：至少能看到两个应用名；JS 加载后由 cardHTML() 整体替换 -->
+      <article class="card cal"><div class="card-head"><h2>热量日记</h2></div></article>
+      <article class="card exp"><div class="card-head"><h2>开支日记</h2></div></article>
+    </section>
   </main>
 
   <footer>
