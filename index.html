@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>日记系列 · 热量日记与开支日记</title>
-<meta name="description" content="日记系列：热量日记（饮食与体重记录）与开支日记（极简记账）两款 Android 应用的官方下载入口。">
+<title>下载热量日记与开支日记</title>
+<meta name="description" content="下载热量日记与开支日记 Android 版安装包">
 <meta name="color-scheme" content="light dark">
 <!--
   图标取自开源图标库 lucide（ISC 许可，https://lucide.dev/license）的官方 SVG，内联改写；
@@ -87,10 +87,8 @@
   .brand { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; letter-spacing: .01em; }
   .brand .mark { flex: none; color: var(--primary); }
 
-  /* 引言 / hero：大标题只靠字号分层，Normal 字重 */
-  .intro { padding: clamp(40px, 9vw, 76px) 0 clamp(24px, 4vw, 40px); }
-  .intro h1 { font-size: clamp(26px, 5vw, 32px); line-height: 1.3; font-weight: 400; letter-spacing: .01em; }
-  .intro p { margin-top: 14px; color: var(--ink-2); font-size: 16px; max-width: 40em; }
+  /* 引言区仅承载 noscript 提示，不占版面 */
+  .intro { padding: 0; }
   .noscript-note {
     margin-top: 16px; padding: 12px 16px; background: var(--card);
     border: 1px dashed var(--line); border-radius: 16px;
@@ -108,6 +106,7 @@
     box-shadow: var(--shadow-1);
     display: flex;
     flex-direction: column;
+    gap: 20px;
     transition: transform .18s ease, box-shadow .18s ease;
   }
   @media (hover: hover) {
@@ -120,20 +119,9 @@
   .card-head .app-ico { flex: none; width: 64px; height: 64px; color: #fff; filter: var(--ico-shadow); }
   @media (min-width: 768px) { .card-head .app-ico { width: 72px; height: 72px; } }
   .card-head h2 { font-size: 24px; line-height: 1.3; font-weight: 400; letter-spacing: .01em; }
-  .card-head .tag {
-    display: flex; align-items: center; gap: 6px; margin-top: 4px;
-    font-size: 13px; color: var(--ink-2);
-  }
-  .card-head .tag .ico { width: 14px; height: 14px; }
-  .slogan { margin-top: 18px; font-size: 16px; font-weight: 600; }
-  .desc { margin-top: 8px; font-size: 14px; color: var(--ink-2); }
-
-  ul.features { list-style: none; margin: 18px 0 20px; display: grid; gap: 10px; }
-  ul.features li { display: flex; gap: 10px; font-size: 16px; line-height: 1.6; }
-  ul.features li .ico { width: 16px; height: 16px; margin-top: .3em; flex: none; color: var(--primary); }
 
   /* 下载区：通道切换 + 版本信息 + 下载按钮。
-     两卡行结构恒定对齐：tab 行 / 信息行 / 按钮行 / 提示行 / 更新行全部常驻，
+     两卡行结构恒定对齐：tab 行 / 信息行 / 按钮行 / 更新行全部常驻，
      各状态只切换行内内容或可见性，不增删占位——任何通道状态下逐行等高。 */
   .dl {
     margin-top: auto; padding-top: 20px;
@@ -170,11 +158,11 @@
     overflow: hidden; clip-path: inset(50%); white-space: nowrap;
   }
 
-  /* 信息行 / 提示行：单行高恒定 + 垂直居中，行内内容切换时行高不塌 */
+  /* 信息行：单行高恒定 + 垂直居中，行内内容切换时行高不塌 */
   .dl-row { min-height: 26px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
   .dl-row .with-ico { display: inline-flex; align-items: center; gap: 5px; }
   .dl-row .ico { width: 13px; height: 13px; }
-  .dl-note[hidden], .dl-hint[hidden], .chip[hidden], .dl-row .with-ico[hidden], details.log[hidden] { display: none; }
+  .dl-note[hidden], .chip[hidden], .dl-row .with-ico[hidden], details.log[hidden] { display: none; }
   .dl-note .retry-link {
     color: var(--primary); background: none; border: 0; font: inherit; cursor: pointer;
     padding: 4px 8px; margin: -4px -8px; border-radius: 10px;
@@ -350,10 +338,8 @@
 
   <main class="wrap">
     <section class="intro">
-      <h1>把每天的记录，做得轻一点</h1>
-      <p>两款 Android 记录应用：一款记吃了什么、体重变化，一款记钱花到了哪里。无广告，支持云同步，数据在自己手里。</p>
       <noscript>
-        <p class="noscript-note">当前浏览器未启用 JavaScript：通道探测无法完成，下载按钮不可用。请启用 JavaScript 后刷新页面。</p>
+        <p class="noscript-note">未启用 JavaScript，无法探测下载通道，下载按钮不可用。启用后请刷新页面。</p>
       </noscript>
     </section>
 
@@ -439,8 +425,8 @@
     }
 
     var CH = {
-      stable: { label: '下载正式版', empty: '暂未发布', error: '获取失败', hint: '稳定版本，适合日常使用。' },
-      beta: { label: '下载公测版', empty: '暂未发布', error: '获取失败', hint: '抢先体验新功能，可能存在小问题。' }
+      stable: { label: '下载正式版', empty: '暂未发布', error: '获取失败' },
+      beta: { label: '下载公测版', empty: '暂未发布', error: '获取失败' }
     };
 
     // 两卡结构相同、仅数据不同：单一数组 + 单一渲染，避免逐行复制造成结构漂移。
@@ -449,50 +435,23 @@
         cls: 'cal',
         dir: 'CalorieDiary',
         ico: '<use href="#sq-bg"/><use href="#i-flame" x="20.4" y="19" width="67.2" height="67.2"/>',
-        name: '热量日记',
-        tag: '饮食与体重记录 · Android',
-        slogan: '把「今天吃了什么」变得毫无负担，减重、增重都能记。',
-        desc: '打开点一下加号：拍张照、选张图，或者写一句「中午吃了一碗米饭和一个小炒肉」——克数、热量与营养素自动算好。',
-        features: [
-          '拍照 / 一句话 AI 识餐，自动解析菜品、克数与热量',
-          '按身高体重算每日热量预算，碳水蛋白脂肪进度一目了然',
-          '体重趋势、喝水打卡、断食计时与周报分享',
-          '邮箱注册登录，记录自动云同步，换手机不丢'
-        ]
+        name: '热量日记'
       },
       {
         cls: 'exp',
         dir: 'ExpenseDiary',
         ico: '<use href="#sq-bg"/><use href="#i-receipt" x="22.8" y="22.8" width="62.4" height="62.4"/>',
-        name: '开支日记',
-        tag: '极简记账 · Android',
-        slogan: '3 秒记一笔，看清钱花在了哪里。',
-        desc: '打开就是「记一笔」：金额一敲、分类一点，收支落账；无广告、无开屏、无理财推荐——只做记账这一件事。',
-        features: [
-          '金额键盘快速落账，也支持一句话 AI 记账',
-          '首页环形预算实时显示今天还能花多少',
-          '分类统计报表、月度预算、微信 / 支付宝账单导入',
-          '数据默认存本机，登录后可云同步，随时 JSON 备份导出'
-        ]
+        name: '开支日记'
       }
     ];
 
     function cardHTML(app) {
       var p = app.cls;
-      var features = app.features.map(function (f) {
-        return '<li><svg class="ico"><use href="#i-check"/></svg>' + f + '</li>';
-      }).join('');
       return '<article class="card ' + p + '" data-app="' + app.dir + '">' +
         '<div class="card-head">' +
           '<svg class="app-ico" width="64" height="64" viewBox="0 0 108 108" aria-hidden="true">' + app.ico + '</svg>' +
-          '<div>' +
-            '<h2>' + app.name + '</h2>' +
-            '<div class="tag"><svg class="ico"><use href="#i-smartphone"/></svg>' + app.tag + '</div>' +
-          '</div>' +
+          '<h2>' + app.name + '</h2>' +
         '</div>' +
-        '<p class="slogan">' + app.slogan + '</p>' +
-        '<p class="desc">' + app.desc + '</p>' +
-        '<ul class="features">' + features + '</ul>' +
         '<div class="dl">' +
           '<div class="chans" role="radiogroup" aria-label="下载通道">' +
             '<button class="chan" type="button" role="radio" data-chan="stable" aria-checked="true" tabindex="0" aria-describedby="' + p + '-stable-why">' +
@@ -516,7 +475,6 @@
           '<a class="btn is-loading" aria-busy="true">' +
             '<svg class="ico"><use href="#i-download"/></svg><span class="btn-label">下载正式版</span>' +
           '</a>' +
-          '<div class="dl-row"><p class="dl-hint" hidden></p></div>' +
         '</div>' +
       '</article>';
     }
@@ -538,7 +496,6 @@
       var logTimer = null;
       var btn = card.querySelector('.btn');
       var btnLabel = card.querySelector('.btn-label');
-      var hint = card.querySelector('.dl-hint');
       var why = {
         stable: card.querySelector('[id$="-stable-why"]'),
         beta: card.querySelector('[id$="-beta-why"]')
@@ -584,7 +541,7 @@
         render();
         // 通道切换：内容轻换（180ms 上浮淡入，miuix 式），reduced-motion 下静默
         if (motionOK) {
-          [verEl, updEl, hint, logEl, note].forEach(function (el) {
+          [verEl, updEl, logEl, note].forEach(function (el) {
             if (!el || el.hidden || !el.animate) return;
             el.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }],
               { duration: 180, easing: 'cubic-bezier(.2, 0, 0, 1)' });
@@ -602,7 +559,6 @@
         note.hidden = true;
         verEl.hidden = true;
         updEl.hidden = true;
-        hint.hidden = true;
         logEl.hidden = true;
         collapseLog(true);
         if (s.status === 'loading') {
@@ -643,8 +599,6 @@
             });
             logEl.hidden = false;
           }
-          hint.textContent = c.hint;
-          hint.hidden = false;
         } else {
           // 未发布或探测失败：统一空态，禁用按钮、不留下载入口
           btn.classList.remove('is-loading');
