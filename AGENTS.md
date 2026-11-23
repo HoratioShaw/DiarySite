@@ -18,6 +18,7 @@ The workflow confirms the target directory over ssh before rsync and uses `ci/de
 | --- | --- |
 | Deploy behavior / exclusions | `.github/workflows/deploy.yml`, `ci/deploy-managed.sh`, `ci/deploy-exclude.txt` |
 | Page copy / download links | `index.html`, `README.md` |
+| Global rules | `~/.config/opencode/AGENTS.md` |
 
 ## Boundaries
 
@@ -31,4 +32,6 @@ The workflow confirms the target directory over ssh before rsync and uses `ci/de
 - Commit deploy secrets — they live only in repo Secrets (`SERVER_HOST` / `SERVER_USER` / `SERVER_SSH_KEY`).
 - Expect panel/certificate files to sync — `.user.ini`, `.htaccess`, `.well-known/*` and `AGENTS.md` are excluded and never touched. Files previously deployed but removed from the repo are deleted via the remote manifest (`~/.deploy-manifests/`), not rsync `--delete`.
 
-General rules: `~/.config/opencode/AGENTS.md`.
+## Definition of done
+
+Page stays self-contained (no CDN scripts, external fonts or external images); download links point at the current beta/stable channels; `deploy.yml`/`ci/deploy-exclude.txt` untouched unless explicitly approved.
