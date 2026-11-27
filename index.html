@@ -133,15 +133,17 @@
   /* 图标（lucide 内联）：默认 1em，随文字对齐，颜色继承 currentColor */
   .ico { width: 1em; height: 1em; flex: none; vertical-align: -.125em; }
 
-  /* 吸顶栏避让：锚点、键盘焦点与 scrollIntoView 都落在顶栏下方 */
-  html { scroll-padding-top: calc(var(--header-h) + var(--anchor-gap)); }
+  /* 吸顶栏避让：锚点、键盘焦点与 scrollIntoView 都落在顶栏下方（含刘海安全区） */
+  html { scroll-padding-top: calc(var(--header-h) + env(safe-area-inset-top) + var(--anchor-gap)); }
 
   /* 顶栏：Miuix 式玻璃 top bar（blur + saturate），不支持 backdrop-filter 时回退实底。
-     与 tio.fyi 同款：56px 定高、内容垂直居中，32px 图标 + 15px 字，不再用上下 padding 撑高 */
+     与 tio.fyi 同款：56px 定高、内容垂直居中，32px 图标 + 15px 字，不再用上下 padding 撑高。
+     刘海/全屏时顶部安全区补进 padding，定高只算内容区，两者相加才是顶栏总高 */
   header {
     position: sticky; top: 0; z-index: 10;
     display: flex; align-items: center;
-    min-height: var(--header-h);
+    min-height: calc(var(--header-h) + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
     background: var(--glass-bg);
     -webkit-backdrop-filter: blur(24px) saturate(1.6);
     backdrop-filter: blur(24px) saturate(1.6);
