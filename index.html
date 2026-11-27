@@ -699,8 +699,10 @@
 
       function renderLog(log) {
         logBody.textContent = '';
+        // 不再按行截断：version.json 的 notes 是本次发布的全量日志（首个正式版会带上
+        // 整个项目历史，上千行），截断会静默吞掉「修复/改进」分组，长内容交给固定区域的滚动
         var lines = typeof log === 'string'
-          ? log.split('\n').map(function (l) { return l.trim(); }).filter(Boolean).slice(0, 60)
+          ? log.split('\n').map(function (l) { return l.trim(); }).filter(Boolean)
           : [];
         if (!lines.length) {
           logBody.classList.add('is-empty');
