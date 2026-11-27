@@ -136,10 +136,12 @@
   /* 吸顶栏避让：锚点、键盘焦点与 scrollIntoView 都落在顶栏下方 */
   html { scroll-padding-top: calc(var(--header-h) + var(--anchor-gap)); }
 
-  /* 顶栏：Miuix 式玻璃 top bar（blur + saturate），不支持 backdrop-filter 时回退实底 */
+  /* 顶栏：Miuix 式玻璃 top bar（blur + saturate），不支持 backdrop-filter 时回退实底。
+     与 tio.fyi 同款：56px 定高、内容垂直居中，32px 图标 + 15px 字，不再用上下 padding 撑高 */
   header {
     position: sticky; top: 0; z-index: 10;
-    padding: clamp(var(--sp-4), 3vw, var(--sp-7)) 0;
+    display: flex; align-items: center;
+    min-height: var(--header-h);
     background: var(--glass-bg);
     -webkit-backdrop-filter: blur(24px) saturate(1.6);
     backdrop-filter: blur(24px) saturate(1.6);
@@ -150,8 +152,8 @@
     .card { background: var(--surface); }
   }
   .brand {
-    display: flex; align-items: center; gap: var(--sp-3);
-    font-size: 17px; font-weight: 600; letter-spacing: .01em;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 15px; font-weight: 600; letter-spacing: -.01em;
   }
   /* 顶栏标识与卡片图标同一套配比：squircle 渐变底 + 白色字形，故取白色前景 */
   .brand .mark { flex: none; color: #fff; }
@@ -430,7 +432,7 @@
 
   <header>
     <div class="wrap brand">
-      <svg class="mark" width="26" height="26" viewBox="0 0 108 108" aria-hidden="true">
+      <svg class="mark" width="32" height="32" viewBox="0 0 108 108" aria-hidden="true">
         <use href="#sq-bg"/>
         <use href="#i-notebook" x="20" y="20" width="68" height="68"/>
       </svg>
