@@ -507,9 +507,9 @@
           .catch(function () { return null; })
           .then(function (meta) {
             // version.json 是 Wails 式 camelCase：versionName / publishedAt / notes / artifacts[]，
-            // 没有 snake_case 也没有顶层 download_url/changelog。取 Android 产物（arm64 单包，无则第一条）。
+            // 没有 snake_case 也没有顶层 download_url/changelog。取 Android 产物（arm64-v8a 单包，精确匹配、无兜底）。
             if (!meta || !meta.versionName || !meta.artifacts || !meta.artifacts.length) return { status: 'error' };
-            var art = meta.artifacts.filter(function (a) { return a.platform === 'android-arm64'; })[0] || meta.artifacts[0];
+            var art = meta.artifacts.filter(function (a) { return a.platform === 'android-arm64-v8a'; })[0];
             if (!art || !art.url) return { status: 'error' };
             var apkPath = null;
             try { apkPath = new URL(art.url, STORAGE).pathname; } catch (e) {}
