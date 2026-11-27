@@ -372,8 +372,11 @@
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .cards .card:nth-child(1) { animation: fade-in-up var(--dur-slow) var(--ease-standard) .06s backwards; }
-  .cards .card:nth-child(2) { animation: fade-in-up var(--dur-slow) var(--ease-standard) .14s backwards; }
+  /* 卡片入场只淡入、不做位移：手机端顶栏与首卡间距最小只有 16px，
+     12px 上浮会把间距吃掉一大半，刷新时看起来像卡片顶到顶栏 */
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .cards .card:nth-child(1) { animation: fade-in var(--dur-slow) var(--ease-standard) .06s backwards; }
+  .cards .card:nth-child(2) { animation: fade-in var(--dur-slow) var(--ease-standard) .14s backwards; }
 
   /* 微交互层：状态行浮现（探测完成/切换时轻换上浮，miuix 式丝滑） */
   .ver:not([hidden]), .dl-note:not([hidden]), .log-card:not([hidden]) {
