@@ -9,7 +9,7 @@
 <!--
   图标取自开源图标库 lucide（ISC 许可，https://lucide.dev/license）的官方 SVG，内联改写；
   全站图标（顶栏标识 / favicon / apple-touch-icon / 卡片 App 图标）同一套几何：squircle 超椭圆底（|x|⁵+|y|⁵=1，
-  108 视口 8% 留白）叠蓝渐变 + 白色 lucide 字形，字形统一 68×68 居中于 20,20；
+  108 视口 8% 留白）叠蓝渐变 + 白色 lucide 字形，字形按视觉面积配平：notebook 60×60、flame/receipt 68×68，均居中；
   apple-touch-icon 为 iOS 要求的满幅不透明底（圆角由系统自裁），字形按遮罩后的比例放大到 120/180。
   渐变与两 App 启动图标 ic_launcher_background 同源（ARGB #FF4D95FF→#FF2B6DE8，
   展开即 #4495FF→#2B6DE8 竖直渐变），字形路径照抄两仓 ic_launcher_foreground.xml。
@@ -393,8 +393,8 @@
        notebook-pen / flame / receipt / dot / download / check / flask-conical / calendar
        其中 flame 与 receipt 路径照抄两 App 仓库 ic_launcher_foreground.xml（同为 Lucide 24 视口）；
        sq-bg = squircle 超椭圆底（|x|⁵+|y|⁵=1，108 视口 8% 留白）叠两 App 启动图标同款竖直蓝渐变。
-       所有字形置于 68×68 居中方框（x/y=20），favicon.svg 用同一视口与同一方框，四处尺寸一致；
-       68 而非更小，是为了 16px 标签页里白字形仍能看清。
+       notebook-pen 的视觉边界比 flame/receipt 更满（20×20 vs 14×19 / 16×20），同方框会显大；
+       按视觉面积配平后 notebook 用 60×60（x/y=24），favicon.svg 同视口同方框，四处观感一致。
        容器用零尺寸定位而非 display:none：渐变等 paint server 不能从 display:none 子树解析 -->
   <svg style="position:absolute; width:0; height:0; overflow:hidden" aria-hidden="true">
     <defs>
@@ -436,7 +436,7 @@
     <div class="wrap brand">
       <svg class="mark" width="32" height="32" viewBox="0 0 108 108" aria-hidden="true">
         <use href="#sq-bg"/>
-        <use href="#i-notebook" x="20" y="20" width="68" height="68"/>
+        <use href="#i-notebook" x="24" y="24" width="60" height="60"/>
       </svg>
       <span>日记系列</span>
     </div>
