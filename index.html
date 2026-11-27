@@ -8,7 +8,9 @@
 <meta name="color-scheme" content="light dark">
 <!--
   图标取自开源图标库 lucide（ISC 许可，https://lucide.dev/license）的官方 SVG，内联改写；
-  卡片 App 图标 = squircle（超椭圆 |x|⁵+|y|⁵=1，108 视口 8% 留白）蓝渐变底 + 白色 lucide 字形，
+  全站图标（顶栏标识 / favicon / apple-touch-icon / 卡片 App 图标）同一套几何：squircle 超椭圆底（|x|⁵+|y|⁵=1，
+  108 视口 8% 留白）叠蓝渐变 + 白色 lucide 字形，字形统一 68×68 居中于 20,20；
+  apple-touch-icon 为 iOS 要求的满幅不透明底（圆角由系统自裁），字形按遮罩后的比例放大到 120/180。
   渐变与两 App 启动图标 ic_launcher_background 同源（ARGB #FF4D95FF→#FF2B6DE8，
   展开即 #4495FF→#2B6DE8 竖直渐变），字形路径照抄两仓 ic_launcher_foreground.xml。
   本页无任何外部运行时依赖（无 CDN 脚本 / 外部字体 / 外部图片），字体走系统字体栈。
@@ -151,7 +153,8 @@
     display: flex; align-items: center; gap: var(--sp-3);
     font-size: 17px; font-weight: 600; letter-spacing: .01em;
   }
-  .brand .mark { flex: none; color: var(--primary); }
+  /* 顶栏标识与卡片图标同一套配比：squircle 渐变底 + 白色字形，故取白色前景 */
+  .brand .mark { flex: none; color: #fff; }
 
   /* 引言区仅承载 noscript 提示，不占版面 */
   .intro { padding: 0; }
@@ -203,24 +206,28 @@
     color: var(--on-surface-variant-summary);
   }
 
-  /* 下载区：通道切换 + 版本信息 + 下载按钮。
-     两卡行结构恒定对齐：tab 行 / 信息行 / 按钮行 / 更新行全部常驻，
-     各状态只切换行内内容或可见性，不增删占位——任何通道状态下逐行等高。 */
+  /* 下载区：通道 / 说明 / 版本信息 / 下载按钮 / 更新说明。
+     两卡行结构恒定：通道行、信息行、按钮行常驻，各状态只换行内内容，
+     更新说明放在按钮之后——日志长短只影响卡片底部，不挤动下载按钮。 */
   .dl {
-    margin-top: auto; padding-top: var(--sp-5);
+    padding-top: var(--sp-5);
     border-top: 1px solid var(--line);
     display: grid; gap: var(--sp-3); justify-items: stretch;
   }
   @media (min-width: 768px) { .dl { justify-items: start; } }
 
-  /* 分段控件（Segmented）：次要态底 + 反白选中药丸；按压用 spring 回弹 */
+  /* 通道行：两个通道都有包 → 分段控件；只剩一个 → 静态徽标，不给出点了没反应的假选项。
+     行高锁定 52px，两种形态互换时卡片不跳动 */
   .chans {
-    display: flex; gap: var(--sp-1); padding: var(--sp-1);
+    min-height: 52px; display: flex; align-items: center; gap: var(--sp-1); padding: var(--sp-1);
     background: var(--surface-container); border-radius: var(--r-16);
+  }
+  .chans[data-mode="single"], .chans[data-mode="loading"], .chans[data-mode="none"] {
+    padding: 0; background: none;
   }
   .chan {
     flex: 1 1 0;
-    display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+    display: inline-flex; align-items: center; justify-content: center;
     min-height: 44px; padding: 0 var(--sp-4); border: 0; border-radius: var(--r-12);
     background: transparent; color: var(--ink-2);
     font: inherit; font-size: var(--fs-body2); font-weight: 600; cursor: pointer;
@@ -230,13 +237,24 @@
                 transform var(--dur-fast) var(--ease-spring);
   }
   .chan:active { transform: scale(.96); }
-  .chan .ico { width: 15px; height: 15px; }
   .chan[aria-checked="true"] {
     background: var(--surface); color: var(--ink);
     box-shadow: 0 1px 3px rgba(0, 0, 0, .14);
   }
-  .chan[aria-disabled="true"] { opacity: .5; cursor: default; }
   .chan:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  /* 单通道：品牌色徽标，纯展示，不可聚焦 */
+  .chan-static {
+    display: inline-flex; align-items: center; gap: var(--sp-2);
+    min-height: 44px; padding: 0 var(--sp-4); border-radius: var(--r-12);
+    background: var(--primary-wash); color: #2762BF;
+    font-size: var(--fs-body2); font-weight: 600;
+  }
+  /* 徽标字色单独取深一档（浅色 5.11:1 / 深色 7.12:1），品牌蓝在浅底上不达 AA */
+  @media (prefers-color-scheme: dark) { .chan-static { color: #9CC2FF; } }
+  .chan-static .ico { width: 15px; height: 15px; }
+  .chan-static.is-loading, .chan-static.is-none {
+    background: none; color: var(--ink-2); font-weight: 400;
+  }
   @media (min-width: 768px) {
     .chans { display: inline-flex; }
     .chan { flex: 0 0 auto; padding: 0 var(--sp-5); }
@@ -254,7 +272,7 @@
   }
   .dl-row .with-ico { display: inline-flex; align-items: center; gap: var(--sp-1); }
   .dl-row .ico { width: 13px; height: 13px; }
-  .dl-note[hidden], .chip[hidden], .dl-row .with-ico[hidden], details.log[hidden] { display: none; }
+  .dl-note[hidden], .chip[hidden], .sz[hidden], .dl-row .with-ico[hidden], .dl-row[hidden], .log-card[hidden] { display: none; }
   .dl-note .retry-link {
     color: var(--primary); background: none; border: 0; font: inherit; cursor: pointer;
     display: inline-flex; align-items: center; min-height: 44px;
@@ -269,42 +287,26 @@
     border: 1px solid var(--line); border-radius: var(--r-8); padding: 2px var(--sp-2);
     background: var(--surface-container);
   }
-  /* 更新摘要挂在 chip 行内；展开面板绝对定位浮层——零布局位移，两卡永不错动 */
-  .dl-meta { position: relative; }
-  details.log summary {
-    cursor: pointer; color: var(--ink-2); font-size: var(--fs-footnote); list-style: none;
-    display: inline-flex; align-items: center; gap: 3px; min-height: 44px;
-    padding: var(--sp-3) 0; margin: calc(var(--sp-3) * -1) 0; /* 视觉行高不变，触控高度补到 ≥44px */
+  /* 更新说明：常驻区块，永不折叠。固定约 6 行高的视窗内滚动，
+     长日志不撑破卡片；滚动渐隐提示沿用 Lea Verou 配方，静态零 JS */
+  .log-card {
+    justify-self: stretch;
+    display: grid; gap: var(--sp-1);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--surface-container); border-radius: var(--r-12);
   }
-  details.log summary::-webkit-details-marker { display: none; }
-  details.log summary .chev { transition: transform var(--dur-med) var(--ease-standard); }
-  details.log.is-open summary .chev { transform: rotate(180deg); }
-  /* 展开/收起：grid 0fr→1fr 过渡 + 淡入，内层 overflow 裁切，长内容自身滚动 */
-  .log-anim {
-    position: absolute; top: calc(100% + var(--sp-2)); left: 0; z-index: 5;
-    width: max-content; min-width: 240px; max-width: min(320px, calc(100vw - 80px));
-    display: grid; grid-template-rows: 0fr; opacity: 0;
-    transition: grid-template-rows var(--dur-med) var(--ease-standard),
-                opacity var(--dur-fast) var(--ease-standard);
-  }
-  details.log.is-open .log-anim { grid-template-rows: 1fr; opacity: 1; }
-  .log-clip {
-    overflow: hidden; min-height: 0;
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-16);
-    box-shadow: var(--shadow-2);
-  }
+  .log-title { font-size: var(--fs-footnote); font-weight: 600; color: var(--ink); }
   .log-body {
-    margin: var(--sp-2); padding: var(--sp-2) var(--sp-3); max-height: 160px; overflow: auto;
-    background-color: var(--surface-container); border-radius: var(--r-12);
+    max-height: 124px; overflow: auto;
     font-size: var(--fs-footnote); line-height: 1.6; color: var(--ink-2);
     display: grid; gap: 3px; align-content: start;
-    /* 滚动渐隐阴影（Lea Verou 经典配方）：仅在可滚时于边缘提示，静态零 JS */
     background-image:
       linear-gradient(var(--surface-container) 40%, rgba(0, 0, 0, 0)) top / 100% 14px no-repeat local,
       linear-gradient(rgba(0, 0, 0, 0), var(--surface-container) 60%) bottom / 100% 14px no-repeat local,
       radial-gradient(farthest-side at 50% 0, var(--fade), rgba(0, 0, 0, 0)) top / 100% 14px no-repeat scroll,
       radial-gradient(farthest-side at 50% 100%, var(--fade), rgba(0, 0, 0, 0)) bottom / 100% 14px no-repeat scroll;
   }
+  .log-body.is-empty { color: var(--ink-2); }
   /* Releases 式分组：组标题（新增/变更/…）加粗，条目用 lucide 圆点 */
   .log-body .log-head { font-weight: 600; color: var(--ink); margin-top: 4px; }
   .log-body .log-head:first-child { margin-top: 0; }
@@ -342,7 +344,7 @@
   }
   @keyframes shimmer { to { background-position: -200% 0; } }
 
-  a:focus-visible, .btn:focus-visible, summary:focus-visible {
+  a:focus-visible, .btn:focus-visible {
     outline: 2px solid var(--primary); outline-offset: 2px;
   }
 
@@ -374,16 +376,18 @@
   .cards .card:nth-child(2) { animation: fade-in-up var(--dur-slow) var(--ease-standard) .14s backwards; }
 
   /* 微交互层：状态行浮现（探测完成/切换时轻换上浮，miuix 式丝滑） */
-  .ver:not([hidden]), .dl-note:not([hidden]), details.log:not([hidden]) {
+  .ver:not([hidden]), .dl-note:not([hidden]), .log-card:not([hidden]) {
     animation: fade-in-up var(--dur-med) var(--ease-standard) backwards;
   }
 </style>
 </head>
 <body>
   <!-- lucide 图标 sprite（ISC 许可，https://lucide.dev/license）：
-       notebook-pen / flame / receipt / dot / download / check / flask-conical / calendar / chevron-down
+       notebook-pen / flame / receipt / dot / download / check / flask-conical / calendar
        其中 flame 与 receipt 路径照抄两 App 仓库 ic_launcher_foreground.xml（同为 Lucide 24 视口）；
        sq-bg = squircle 超椭圆底（|x|⁵+|y|⁵=1，108 视口 8% 留白）叠两 App 启动图标同款竖直蓝渐变。
+       所有字形置于 68×68 居中方框（x/y=20），favicon.svg 用同一视口与同一方框，四处尺寸一致；
+       68 而非更小，是为了 16px 标签页里白字形仍能看清。
        容器用零尺寸定位而非 display:none：渐变等 paint server 不能从 display:none 子树解析 -->
   <svg style="position:absolute; width:0; height:0; overflow:hidden" aria-hidden="true">
     <defs>
@@ -419,16 +423,13 @@
     <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>
     </symbol>
-    <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m6 9 6 6 6-6"/>
-    </symbol>
   </svg>
 
   <header>
     <div class="wrap brand">
-      <svg class="mark" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <use href="#i-notebook"/>
+      <svg class="mark" width="26" height="26" viewBox="0 0 108 108" aria-hidden="true">
+        <use href="#sq-bg"/>
+        <use href="#i-notebook" x="20" y="20" width="68" height="68"/>
       </svg>
       <span>日记系列</span>
     </div>
@@ -458,7 +459,8 @@
   <script>
   // 下载通道探测：OpenList 的裸 GET 一律返回 SPA 壳，读文件必须走 /api/fs/get 换 raw_url。
   // APK 直链同理——artifacts[].url 裸 GET 会拿到 HTML，页面加载时用 fs/get 换签名 raw_url 作 href。
-  // 没探测到 version.json 的通道视为未发布：tab 禁用、不给任何下载入口；探测失败静默处理，不刷控制台。
+  // 没有 version.json 的通道视为未发布：不给下载入口，也不让它占着默认选中位（只有测试版时自动落到测试版）。
+  // 获取失败与确认未发布分开处理：失败可就地重试，回焦/回前台静默复探，不打断正在展示的版本。
   (function () {
     var STORAGE = 'https://storage.horatio.cn';
     var TIMEOUT = 8000;
@@ -512,6 +514,7 @@
                 status: 'ready',
                 version: meta.versionName,
                 updated: meta.publishedAt || '',
+                size: typeof art.size === 'number' ? art.size : 0,
                 log: typeof notes === 'string' ? notes : '',
                 href: apkRes.raw
               };
@@ -528,8 +531,8 @@
     }
 
     var CH = {
-      stable: { label: '下载正式版', empty: '暂未发布', error: '获取失败' },
-      beta: { label: '下载公测版', empty: '暂未发布', error: '获取失败' }
+      stable: { name: '正式版', label: '下载正式版' },
+      beta: { name: '测试版', label: '下载测试版' }
     };
 
     // 两卡结构相同、仅数据不同：单一数组 + 单一渲染，避免逐行复制造成结构漂移。
@@ -537,14 +540,14 @@
       {
         cls: 'cal',
         dir: 'CalorieDiary',
-        ico: '<use href="#sq-bg"/><use href="#i-flame" x="20.4" y="19" width="67.2" height="67.2"/>',
+        ico: '<use href="#sq-bg"/><use href="#i-flame" x="20" y="20" width="68" height="68"/>',
         name: '热量日记',
         desc: '记录饮食、体重与喝水，查看每日预算与周报'
       },
       {
         cls: 'exp',
         dir: 'ExpenseDiary',
-        ico: '<use href="#sq-bg"/><use href="#i-receipt" x="22.8" y="22.8" width="62.4" height="62.4"/>',
+        ico: '<use href="#sq-bg"/><use href="#i-receipt" x="20" y="20" width="68" height="68"/>',
         name: '开支日记',
         desc: '记录每笔收支、分类与预算，查看统计与周报'
       }
@@ -561,28 +564,22 @@
           '</div>' +
         '</div>' +
         '<div class="dl">' +
-          '<div class="chans" role="radiogroup" aria-label="下载通道">' +
-            '<button class="chan" type="button" role="radio" data-chan="stable" aria-checked="true" tabindex="0" aria-describedby="' + p + '-stable-why">' +
-              '<svg class="ico"><use href="#i-check"/></svg>正式版' +
-            '</button>' +
-            '<button class="chan" type="button" role="radio" data-chan="beta" aria-checked="false" tabindex="-1" aria-describedby="' + p + '-beta-why">' +
-              '<svg class="ico"><use href="#i-flask"/></svg>公测版' +
-            '</button>' +
-            '<span class="sr-only" id="' + p + '-stable-why" hidden></span>' +
-            '<span class="sr-only" id="' + p + '-beta-why" hidden></span>' +
+          '<div class="chans" data-mode="loading">' +
+            '<span class="chan-static is-loading">正在获取版本…</span>' +
           '</div>' +
-          '<div class="dl-row"><p class="dl-note" hidden></p></div>' +
-          '<div class="dl-row dl-meta">' +
+          '<div class="dl-row" hidden><p class="dl-note" hidden></p></div>' +
+          '<div class="dl-row">' +
             '<span class="chip ver" hidden></span>' +
             '<span class="with-ico upd" hidden><svg class="ico"><use href="#i-calendar"/></svg><span></span></span>' +
-            '<details class="log" hidden>' +
-              '<summary><svg class="ico chev"><use href="#i-chevron"/></svg>本版更新</summary>' +
-              '<div class="log-anim"><div class="log-clip"><div class="log-body"></div></div></div>' +
-            '</details>' +
+            '<span class="sz" hidden></span>' +
           '</div>' +
           '<a class="btn is-loading" aria-busy="true">' +
-            '<svg class="ico"><use href="#i-download"/></svg><span class="btn-label">下载正式版</span>' +
+            '<svg class="ico"><use href="#i-download"/></svg><span class="btn-label">正在获取版本</span>' +
           '</a>' +
+          '<section class="log-card" aria-labelledby="' + p + '-log-title" hidden>' +
+            '<h3 class="log-title" id="' + p + '-log-title">本版更新</h3>' +
+            '<div class="log-body"></div>' +
+          '</section>' +
         '</div>' +
       '</article>';
     }
@@ -591,203 +588,238 @@
 
     document.querySelectorAll('.card[data-app]').forEach(function (card) {
       var dir = card.getAttribute('data-app');
-      var tabs = {
-        stable: card.querySelector('[data-chan="stable"]'),
-        beta: card.querySelector('[data-chan="beta"]')
-      };
+      var chans = card.querySelector('.chans');
       var note = card.querySelector('.dl-note');
+      var noteRow = note.parentElement;
       var verEl = card.querySelector('.ver');
       var updEl = card.querySelector('.upd');
       var updText = card.querySelector('.upd span');
-      var logEl = card.querySelector('details.log');
+      var szEl = card.querySelector('.sz');
+      var logCard = card.querySelector('.log-card');
       var logBody = card.querySelector('.log-body');
-      var logTimer = null;
       var btn = card.querySelector('.btn');
       var btnLabel = card.querySelector('.btn-label');
-      var why = {
-        stable: card.querySelector('[id$="-stable-why"]'),
-        beta: card.querySelector('[id$="-beta-why"]')
-      };
+
       var st = { stable: { status: 'loading' }, beta: { status: 'loading' } };
       var sel = 'stable';
-      var userPicked = false; // 用户手动选过通道后，探测完成不再覆盖选择
+      var picked = false; // 用户手动选过通道后，探测/复探都不再改选
+      var mode = '';
 
-      // 收起更新行：先播完收起动画再关 open，切通道时立即复位
-      function collapseLog(immediate) {
-        if (logTimer) { clearTimeout(logTimer); logTimer = null; }
-        logEl.classList.remove('is-open');
-        if (immediate) { logEl.open = false; return; }
-        logTimer = setTimeout(function () { logEl.open = false; logTimer = null; }, 250);
+      function ready(ch) { return st[ch].status === 'ready'; }
+
+      // 默认落在有包的最高通道（正式版优先）；没有正式版就自动落到测试版，
+      // 不会因为正式版缺失或获取失败而卡在一个点不动的选项上
+      function syncSelection() {
+        if (picked && ready(sel)) return;
+        for (var i = 0; i < ORDER.length; i++) {
+          if (ready(ORDER[i])) { sel = ORDER[i]; return; }
+        }
       }
 
-      logEl.querySelector('summary').addEventListener('click', function (e) {
-        e.preventDefault(); // 自管开合以获得展开动画，键盘 Enter/Space 同样走此路径
-        if (logEl.hidden) return;
-        if (logTimer) { clearTimeout(logTimer); logTimer = null; }
-        if (logEl.classList.contains('is-open')) {
-          collapseLog(false);
-        } else {
-          logEl.open = true;
-          void logEl.offsetWidth; // 强制回流，先按 0fr 落位再过渡到 1fr
-          logEl.classList.add('is-open');
+      // 通道行按可用数量换形态：两个都有包才是分段控件，只剩一个就是静态徽标，
+      // 不给「看起来能点、点了没反应」的灰选项
+      function buildChans() {
+        var n = 0, only = null;
+        ORDER.forEach(function (ch) { if (ready(ch)) { n++; only = ch; } });
+        var loading = ORDER.some(function (ch) { return st[ch].status === 'loading'; });
+        var m = n > 1 ? 'seg' : n === 1 ? 'single' : loading ? 'loading' : 'none';
+        var changed = m !== mode;
+        mode = m;
+        chans.setAttribute('data-mode', m);
+        if (m === 'seg') {
+          chans.setAttribute('role', 'radiogroup');
+          chans.setAttribute('aria-label', '下载通道');
+          if (changed) {
+            chans.innerHTML = ORDER.map(function (ch) {
+              return '<button class="chan" type="button" role="radio" data-chan="' + ch + '"' +
+                ' aria-checked="' + (ch === sel) + '" tabindex="' + (ch === sel ? 0 : -1) + '">' +
+                CH[ch].name + '</button>';
+            }).join('');
+          } else {
+            ORDER.forEach(function (ch) {
+              var b = chans.querySelector('[data-chan="' + ch + '"]');
+              b.setAttribute('aria-checked', String(ch === sel));
+              b.tabIndex = ch === sel ? 0 : -1;
+            });
+          }
+          return;
         }
-      });
+        chans.removeAttribute('role');
+        chans.removeAttribute('aria-label');
+        if (!changed) return;
+        if (m === 'loading') {
+          chans.innerHTML = '<span class="chan-static is-loading">正在获取版本…</span>';
+        } else if (m === 'none') {
+          chans.innerHTML = '<span class="chan-static is-none">暂无可用版本</span>';
+        } else {
+          chans.innerHTML = '<span class="chan-static">' +
+            '<svg class="ico" aria-hidden="true"><use href="' + (only === 'stable' ? '#i-check' : '#i-flask') + '"/></svg>' +
+            CH[only].name + '</span>';
+        }
+      }
 
-      // Esc 与点外部收起浮层
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && logEl.classList.contains('is-open')) collapseLog(false);
+      // 事件委托：内层按状态重建，监听不丢
+      chans.addEventListener('click', function (e) {
+        var b = e.target.closest && e.target.closest('.chan');
+        if (b) pick(b.getAttribute('data-chan'));
       });
-      document.addEventListener('click', function (e) {
-        if (logEl.classList.contains('is-open') && !logEl.contains(e.target)) collapseLog(false);
+      chans.addEventListener('keydown', function (e) {
+        if (mode !== 'seg') return;
+        var dir = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1
+          : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+        if (!dir) return;
+        e.preventDefault();
+        var next = ORDER[(ORDER.indexOf(sel) + dir + ORDER.length) % ORDER.length];
+        pick(next);
+        var b = chans.querySelector('[data-chan="' + next + '"]');
+        if (b) b.focus();
       });
 
       var motionOK = !matchMedia('(prefers-reduced-motion: reduce)').matches;
       function pick(ch) {
-        if (ch === sel) return;
+        if (!ready(ch) || ch === sel) return;
         sel = ch;
-        userPicked = true;
+        picked = true;
         render();
-        // 通道切换：内容轻换（200ms 上浮淡入，克制 easing），reduced-motion 下静默
-        if (motionOK) {
-          [verEl, updEl, logEl, note].forEach(function (el) {
-            if (!el || el.hidden || !el.animate) return;
-            el.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }],
-              { duration: 200, easing: 'cubic-bezier(.16, 1, .3, 1)' });
-          });
+        if (!motionOK) return;
+        // 通道切换：内容轻换（200ms 上浮淡入），reduced-motion 下静默
+        [verEl, updEl, logCard, note].forEach(function (el) {
+          if (!el || el.hidden || !el.animate) return;
+          el.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }],
+            { duration: 200, easing: 'cubic-bezier(.16, 1, .3, 1)' });
+        });
+      }
+
+      function renderLog(log) {
+        logBody.textContent = '';
+        var lines = typeof log === 'string'
+          ? log.split('\n').map(function (l) { return l.trim(); }).filter(Boolean).slice(0, 60)
+          : [];
+        if (!lines.length) {
+          logBody.classList.add('is-empty');
+          logBody.textContent = '此版本暂无更新说明';
+          return;
         }
+        logBody.classList.remove('is-empty');
+        lines.forEach(function (l) {
+          // 无破折号的行是组标题（新增/修复/…），带破折号的是条目
+          var item = /^[-·*]/.test(l);
+          var row = document.createElement('div');
+          row.className = item ? 'log-item' : 'log-head';
+          if (item) {
+            var ico = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            ico.setAttribute('class', 'ico');
+            ico.setAttribute('aria-hidden', 'true');
+            var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            use.setAttribute('href', '#i-dot');
+            ico.appendChild(use);
+            row.appendChild(ico);
+            row.appendChild(document.createTextNode(l.replace(/^[-·*]\s*/, '')));
+          } else {
+            row.textContent = l;
+          }
+          logBody.appendChild(row);
+        });
       }
 
       function render() {
+        syncSelection();
+        buildChans();
         var s = st[sel];
-        var c = CH[sel];
-        ORDER.forEach(function (ch) {
-          tabs[ch].setAttribute('aria-checked', String(ch === sel));
-          tabs[ch].tabIndex = ch === sel ? 0 : -1; // roving tabindex：tab 行只有一个焦点停靠点
-        });
+
         note.hidden = true;
+        note.textContent = '';
+        noteRow.hidden = true;
         verEl.hidden = true;
         updEl.hidden = true;
-        logEl.hidden = true;
-        collapseLog(true);
+        szEl.hidden = true;
+        logCard.hidden = true;
+        btn.classList.remove('is-off');
+
         if (s.status === 'loading') {
           btn.classList.add('is-loading');
-          btn.classList.remove('is-off');
           btn.setAttribute('aria-busy', 'true');
-          btnLabel.textContent = c.label;
-        } else if (s.status === 'ready') {
-          btn.classList.remove('is-loading', 'is-off');
-          btn.removeAttribute('aria-busy');
+          btn.removeAttribute('href');
+          btnLabel.textContent = '正在获取版本';
+          return;
+        }
+        btn.classList.remove('is-loading');
+        btn.removeAttribute('aria-busy');
+
+        if (s.status === 'ready') {
           btn.href = s.href;
-          btnLabel.textContent = c.label;
+          btnLabel.textContent = CH[sel].label;
           verEl.textContent = s.version;
           verEl.hidden = false;
           var date = fmtDate(s.updated);
           updText.textContent = date;
           updEl.hidden = !date;
-          if (typeof s.log === 'string' && s.log) {
-            logBody.textContent = '';
-            s.log.split('\n').map(function (l) { return l.trim(); }).filter(Boolean).slice(0, 8).forEach(function (l) {
-              // 无破折号的行是组标题（新增/变更/…），带破折号的是条目
-              var item = /^[-·]/.test(l);
-              var row = document.createElement('div');
-              row.className = item ? 'log-item' : 'log-head';
-              if (item) {
-                var ico = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                ico.setAttribute('class', 'ico');
-                ico.setAttribute('aria-hidden', 'true');
-                var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-                use.setAttribute('href', '#i-dot');
-                ico.appendChild(use);
-                row.appendChild(ico);
-                row.appendChild(document.createTextNode(l.replace(/^[-·]\s*/, '')));
-              } else {
-                row.textContent = l;
-              }
-              logBody.appendChild(row);
-            });
-            logEl.hidden = false;
+          szEl.textContent = s.size ? (s.size / 1048576).toFixed(1) + ' MB' : '';
+          szEl.hidden = !s.size;
+          renderLog(s.log);
+          logCard.hidden = false;
+          // 只有一个通道有包时说明原因，避免「想切换却点不动」的错觉
+          var other = sel === 'stable' ? 'beta' : 'stable';
+          if (st[other].status === 'empty') {
+            note.textContent = CH[other].name + '尚未发布，当前提供' + CH[sel].name;
+            note.hidden = false;
+            noteRow.hidden = false;
           }
+          return;
+        }
+
+        // 未发布 / 获取失败：统一空态，禁用按钮、不留下载入口
+        btn.classList.add('is-off');
+        btn.removeAttribute('href');
+        btnLabel.textContent = '暂无版本';
+        if (s.status === 'error') {
+          // 存储抖动造成的瞬时失败不该粘死：给一个就地重试入口
+          note.textContent = '版本信息获取失败，请稍后重试';
+          note.appendChild(document.createTextNode(' '));
+          var retry = document.createElement('button');
+          retry.type = 'button';
+          retry.className = 'retry-link';
+          retry.textContent = '重试';
+          retry.addEventListener('click', function () { probeAll(); });
+          note.appendChild(retry);
         } else {
-          // 未发布或探测失败：统一空态，禁用按钮、不留下载入口
-          btn.classList.remove('is-loading');
-          btn.classList.add('is-off');
-          btn.removeAttribute('aria-busy');
-          btn.removeAttribute('href');
-          btnLabel.textContent = '暂无版本';
-          note.textContent = s.status === 'error' ? '版本信息获取失败，请稍后重试' : '暂无可下载版本';
-          if (s.status === 'error') {
-            // 存储抖动造成的瞬时失败不该粘死：给一个就地重试入口
-            note.appendChild(document.createTextNode(' '));
-            var retry = document.createElement('button');
-            retry.type = 'button';
-            retry.className = 'retry-link';
-            retry.textContent = '重试';
-            retry.addEventListener('click', probeAll);
-            note.appendChild(retry);
-          }
-          note.hidden = false;
+          note.textContent = '暂无可下载版本';
         }
+        note.hidden = false;
+        noteRow.hidden = false;
       }
-
-      function finish() {
-        // 作者定稿：每次加载默认「正式版」；只有正式版确认缺席（empty=未发布）才落到测试版。
-        // 正式版探测失败（error，未知）不算缺席——保持默认在正式版，不悄悄跳测试版。
-        // 同一次加载内用户手动选择仍被尊重（含回焦自动复探），刷新后重置、不跨次记忆。
-        if (!(userPicked && st[sel].status === 'ready')) {
-          sel = (st.stable.status === 'empty' && st.beta.status === 'ready') ? 'beta' : 'stable';
-        }
-        ORDER.forEach(function (ch) {
-          var s = st[ch];
-          var off = s.status !== 'ready';
-          // aria-disabled 保留可聚焦可发现；说明经 aria-describedby 播报
-          tabs[ch].setAttribute('aria-disabled', String(off));
-          why[ch].textContent = off ? (s.status === 'error' ? CH[ch].error : CH[ch].empty) : '';
-          why[ch].hidden = !off;
-        });
-        render();
-      }
-
-      ORDER.forEach(function (ch) {
-        tabs[ch].addEventListener('click', function () {
-          if (tabs[ch].getAttribute('aria-disabled') === 'true') return;
-          pick(ch);
-        });
-        // radio pattern：左右（上下）方向键在可选项间移动并选中
-        tabs[ch].addEventListener('keydown', function (e) {
-          var dir = 0;
-          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') dir = 1;
-          else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') dir = -1;
-          else return;
-          e.preventDefault();
-          var i = ORDER.indexOf(ch);
-          for (var step = 1; step <= ORDER.length; step++) {
-            var next = ORDER[(i + dir * step + ORDER.length * 2) % ORDER.length];
-            if (tabs[next].getAttribute('aria-disabled') !== 'true') {
-              pick(next);
-              tabs[next].focus();
-              return;
-            }
-          }
-        });
-      });
 
       var probing = false;
-      function probeAll() {
+      var lastProbe = 0;
+      function probeAll(opts) {
         if (probing) return;
+        opts = opts || {};
         probing = true;
-        ORDER.forEach(function (ch) { st[ch] = { status: 'loading' }; });
-        render();
+        lastProbe = Date.now();
+        if (!opts.silent) {
+          ORDER.forEach(function (ch) { st[ch] = { status: 'loading' }; });
+          render();
+        }
         Promise.all(ORDER.map(function (ch) {
           return loadChannel(dir, ch).then(function (res) {
+            // 静默复探失败时保留已展示的下载，不让一次抖动把按钮打回空态
+            if (opts.silent && res.status === 'error' && ready(ch)) return;
             st[ch] = res;
-            if (ch === sel) render();
+            render();
           });
-        })).then(finish).then(function () { probing = false; });
+        })).then(function () {
+          probing = false;
+          render();
+        });
       }
-      // 加载瞬间撞上存储抖动会被冻结成"没有"：回焦/回到前台时自动复探非就绪通道
+      // 回焦/回到前台复探：只补错误与「未发布」的通道，且节流；
+      // 复探静默进行，不把正在展示的版本重置成骨架屏
       function reprobeIfStale() {
-        var stale = ORDER.some(function (ch) { return st[ch].status !== 'ready'; });
-        if (stale) probeAll();
+        if (probing) return;
+        var idle = Date.now() - lastProbe;
+        var errored = ORDER.some(function (ch) { return st[ch].status === 'error'; });
+        var missing = ORDER.some(function (ch) { return st[ch].status === 'empty'; });
+        if ((errored && idle > 15000) || (missing && idle > 60000)) probeAll({ silent: true });
       }
       window.addEventListener('focus', reprobeIfStale);
       document.addEventListener('visibilitychange', function () {
